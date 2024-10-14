@@ -1,17 +1,45 @@
 #include <iostream>
 #include <conio.h>
-
+const int dimention=10;
 struct Pos {
     int x;
     int y;
 };
 
 struct world {
-    int x_size;
-    int y_size;
+    int map[dimention][dimention];
     Pos p;
 };
-
+void generateMap(world* world)
+{
+   for(int i = 0; i < dimention; i++)
+   {
+    for(int j = 0; j < dimention; j++)
+    {
+        if ((i == 0 || i == dimention -1 ) && (j >= 0 || j < dimention-1 ))
+            {
+                 world->map[i][j] = 1;
+            }
+        else if ((j == 0 || j == dimention -1 ) && (i >= 0 || i < dimention-1 ))
+            {
+                 world->map[i][j] = 1;
+            }
+       
+        else if (i ==  (dimention/2)-1 && j <  (dimention/2)-1  )
+            {
+               world->map[i][j] = 1;
+            }
+         else if (i ==  (dimention/2)+2 && j >  (dimention/2)-1 )
+            {
+               world->map[i][j] = 1;
+            }
+        else{
+               world->map[i][j] = 0;
+            }    
+       
+    }
+   }
+}
 int translate_user_input_x(char input)
 {
     if (input == 'd')
@@ -41,30 +69,13 @@ int translate_user_input_y(char input)
 
 void translate_user_input(world* world, char input)
 {
-    int new_x = world->p.x + translate_user_input_x(input);
-    if (new_x < world->x_size && new_x >= 0)
-    { world->p.x = new_x;}
-       
-      if (new_x < 0)
-        {
-              world->p.x = 0;
-        }
-              if (new_x > world->x_size)
-        {
-              world->p.x = world->x_size;
-        }
+ int new_col = world->p.x + translate_user_input_x(input);
+ int new_row = world->p.y + translate_user_input_y(input);
 
-
-    int new_y = world->p.y + translate_user_input_y(input);
-    if (new_y < world->y_size && new_y >= 0)
-        world->p.y = new_y;
-         if (new_y < 0)
+    if (world->map[new_row][new_col]  != 1 )
         {
-              world->p.y = 0;
-        }
-              if (new_y > world->y_size)
-        {
-              world->p.y = world->y_size;
+              world->p.x = new_col;
+               world->p.y = new_row;
         }
 }
 
@@ -77,25 +88,18 @@ char get_user_input()
 void display(world* world)
 {
     system("cls");
-    for (int i = -1; i < world->y_size + 1; i++)
+    for (int i = 0; i < dimention ; i++)
     {
-        for (int j = -1; j < world->x_size + 1; j++)
+        for (int j = 0; j < dimention ; j++)
         {
-            if (i == -1 || i == world->y_size)
+            if (world->map[i][j] != 0 )
             {
-                if(j == -1)
+                if(j == 0)
                 std::cout << "#";
                 else 
                     std::cout << " #";
             }
-            else if (j == -1 || j == world->x_size)
-            {
-
-                if (j == -1)
-                    std::cout << "#";
-                else
-                    std::cout << " #";
-            }
+           
             else if (i == world->p.y && j == world->p.x)
             {
                 std::cout << " *";
@@ -111,6 +115,7 @@ void display(world* world)
 
 void render(world* world)
 {
+    generateMap(world);
     display(world);
     char input = get_user_input();
     translate_user_input(world, input);
@@ -122,10 +127,8 @@ int main()
 {
 
     world w;
-    w.x_size = 10;
-    w.y_size = 10;
-    w.p.x = 0;
-    w.p.y = 0;
+    w.p.x = 1;
+    w.p.y = 1;
     while (1)
     {
         render(&w);
